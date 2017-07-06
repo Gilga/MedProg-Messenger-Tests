@@ -31,60 +31,39 @@ import de.sb.messenger.persistence.Person.Group;
 
 public class PersonServiceTest extends ServiceTest {
 
-	public String username;
-	public String usernameAndPassword;
 	public String authorizationHeaderName;
 	public String authorizationHeaderValue;
 	public String authorizationHeaderInvalidValue;
 
-	public EntityManager entityManager;
-	protected static EntityManagerFactory EM_FACTORY;
-	WebTarget userTarget;
-	WebTarget userTargetInvalid;
+	//WebTarget userTarget;
+	//WebTarget userTargetInvalid;
 	
-
 	@Before
 	public void setupBefore() {
-//
-//		username = "ines";
-//		String password = "ines";
-//		usernameAndPassword = username + ":" + password;
-//		authorizationHeaderName = "Authorization";
-//		authorizationHeaderValue = "Basic"
-//				+ java.util.Base64.getEncoder().encodeToString(usernameAndPassword.getBytes());
-//		EM_FACTORY = Persistence.createEntityManagerFactory("messenger");
-//		entityManager = EM_FACTORY.createEntityManager();
-
+	
+		String username = "ines.bergmann@web.de";
+		String password = "ines";
+		String usernameAndPassword = username + ":" + password;
+		authorizationHeaderName = "Authorization";
+		authorizationHeaderValue = "Basic"
+				+ java.util.Base64.getEncoder().encodeToString(usernameAndPassword.getBytes());
+		authorizationHeaderInvalidValue = "Basic"
+				+ java.util.Base64.getEncoder().encodeToString("ines.bergmann@web.de:bla".getBytes());
 	}
-
 	@Test
 	public void testCriteriaQueries() {
-		String s = "some content";
-		byte[] content = s.getBytes();
-		Document doc = new Document("image/jpeg", content);
-		// create entity
-		Person person = new Person("test@gmail.com", doc);
-		person.getName().setGiven("John");
-		person.getName().setFamily("Smith");
-		person.getAddress().setStreet("Falkenbergerstr. 1");
-		person.getAddress().setPostcode("12345");
-		person.getAddress().setCity("Berlin");
-		person.setGroup(Group.USER);
-		byte[] hash = person.passwordHash("password");
-		person.setPasswordHash(hash);
-		WebTarget webTarget = newWebTarget("root", "root").path("people");
-
+		
+		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
 		/*
 		 * Test GET queryParam
 		 */
-		List<Person> people;
+		Person[] people;
 
 		final int offset = 10, limit = 200;
-		Response response = webTarget.queryParam("offset", offset).queryParam("limit", limit).request()
+		Response response = userTarget.path("people/2").queryParam("offset", offset).queryParam("limit", limit).request()
 				.accept(APPLICATION_JSON).get();
 
-		people = response.readEntity(new GenericType<List<Person>>() {
-		});
+		people = response.readEntity(Person[].class);
 
 		for (Person p : people) {
 			assertTrue(offset <= p.getVersion());
@@ -97,11 +76,10 @@ public class PersonServiceTest extends ServiceTest {
 		 * Test timeStamp
 		 */
 		final long lowerCreationTimestamp = 0, upperCreationTimestamp = 50;
-		response = webTarget.queryParam("lowerCreationTimestamp", lowerCreationTimestamp)
+		response = userTarget.path("people/2").queryParam("lowerCreationTimestamp", lowerCreationTimestamp)
 				.queryParam("upperCreationTimestamp", upperCreationTimestamp).request().accept(APPLICATION_JSON).get();
 
-		people = response.readEntity(new GenericType<List<Person>>() {
-		});
+		people = response.readEntity(Person[].class);
 
 		for (Person p : people) {
 			assertTrue(lowerCreationTimestamp <= p.getCreationTimestamp());
@@ -109,15 +87,14 @@ public class PersonServiceTest extends ServiceTest {
 		}
 		assertTrue(response.getStatus() == 200);
 		/*
-		 * Test givenName
+		 * Test givenName param
 		 */
-		response = webTarget.queryParam("giveName", person.getName().getGiven()).request().accept(APPLICATION_JSON)
+		response = userTarget.path("people/2").queryParam("givenName", "Ines").request().accept(APPLICATION_JSON)
 				.get();
 
-		people = response.readEntity(new GenericType<List<Person>>() {
-		});
+		people = response.readEntity(Person[].class);
 
-		assertEquals("John", people.get(0).getName().getGiven());
+		assertEquals("Ines", people[0].getName().getGiven());
 		assertTrue(response.getStatus() == 200);
 
 	}
@@ -127,35 +104,38 @@ public class PersonServiceTest extends ServiceTest {
 	 */
 	@Test
 	public void testIdentityQueries() {
-		userTarget = newWebTarget("ines", "ines");
-		userTargetInvalid = newWebTarget("ines", "password").path("people");
+		WebTarget userTarget1 = newWebTarget("sascha.baumeister@gmail.com", "sascha");
+		System.out.println("BBBBB" + userTarget1.toString());
+		//userTargetInvalid = newWebTarget("ines.bergmann@web.de", "password").path("people");
 
 		/*
 		 * Test getRequester
 		 */
-		Response res = userTarget.path("people").request().header(authorizationHeaderName, authorizationHeaderValue).get();
+		
+		Response res = userTarget1.path("/people/2").request().header(authorizationHeaderName, authorizationHeaderValue).get();
 		// correct authentication.no exception
+		
 		assertTrue(res.getStatus() == 200);
+//
+//		res = userTargetInvalid.request().header(authorizationHeaderName, authorizationHeaderInvalidValue).get();
+//		// 401 Unauthorized
+//		assertTrue(res.getStatus() == 401);
 
-		res = userTargetInvalid.request().header(authorizationHeaderName, authorizationHeaderInvalidValue).get();
-		// 401 Unauthorized
-		assertTrue(res.getStatus() == 401);
-
-		res = userTarget.path("people/2").request().header(authorizationHeaderName, authorizationHeaderValue).get();
+		res = userTarget1.path("/people/2").request().header(authorizationHeaderName, authorizationHeaderValue).get();
 		// valid. keine exception
 		assertTrue(res.getStatus() == 200);
 
-		res = userTarget.path("/people/20").request().header(authorizationHeaderName, authorizationHeaderValue).get();
+		res = userTarget1.path("/people/20").request().header(authorizationHeaderName, authorizationHeaderValue).get();
 		// ClientErrorException 404keine passende Entitaet
 		assertTrue(res.getStatus() == 404);
 
-		res = userTarget.path("people/2").request().header(authorizationHeaderName, authorizationHeaderValue)
+		res = userTarget1.path("people/2").request().header(authorizationHeaderName, authorizationHeaderValue)
 				.accept(APPLICATION_JSON).get();
 		
 		// return media type APPLICATION_JSON
 		assertEquals(APPLICATION_JSON_TYPE, res.getMediaType());
 
-		res = userTarget.path("people/2").request().header(authorizationHeaderName, authorizationHeaderValue)
+		res = userTarget1.path("people/2").request().header(authorizationHeaderName, authorizationHeaderValue)
 				.accept(APPLICATION_XML).get();
 		// returns media type APPLICATION_XML_TYPE because APPLICATION_XMLis
 		// simply a string
@@ -184,26 +164,22 @@ public class PersonServiceTest extends ServiceTest {
 		byte[] hash = person.passwordHash("password");
 		person.setPasswordHash(hash);
 
-		WebTarget webTarget = newWebTarget("root", "root").path("people");
+		WebTarget webTarget = newWebTarget("ines.bergmann@web.de", "ines");
 		/*
 		 * test PUT update person/create person
 		 */
-		Response response = webTarget.request().accept(APPLICATION_JSON).header("Set-password", "password")
+		Response response = webTarget.path("people/2").request().accept(APPLICATION_JSON).header("Set-password", "password")
 				.put(Entity.json(person));
-//id how to get ??????????
+		//id how to get ??????????
 		String idPerson = response.readEntity(String.class);
 
-		assertNotEquals(0, idPerson);
-		System.out.println("AAAAAAAAA" + idPerson);
+		assertNotEquals("0", idPerson);
+//		System.out.println("AAAAAAAAA" + idPerson);
 		//assertTrue(response.getStatus() == 200);
-
-		
-		// TODO authenticated requester
 
 		/*
 		 * Test getPerson
 		 */
-		//WebTarget webTargetInes = this.newWebTarget("ines", "ines").path("people/2");
 		response = webTarget.path("people/2").request().accept(APPLICATION_JSON).get();
 		Person returnedPerson = response.readEntity(Person.class);
 		assertTrue(response.getStatus() == 200);
@@ -214,8 +190,8 @@ public class PersonServiceTest extends ServiceTest {
 		 */
 		
 		List<Message> msgs;		
-		WebTarget webTargetInesMsgs = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/messagesAuthored");
-		response = webTargetInesMsgs.request().accept(APPLICATION_JSON).get();		
+		//WebTarget webTargetInesMsgs = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/messagesAuthored");
+		response =webTarget.path("people/2/messagesAuthored").request().accept(APPLICATION_JSON).get();		
 		msgs = response.readEntity(new GenericType<List<Message>>() {});	
 		assertNotEquals(0, msgs.size());
 		assertTrue(response.getStatus() == 200);
@@ -223,9 +199,9 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test peopleObserving
 		 */
-		WebTarget webTargetInesPeopleObserving = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/peopleObserving");
+		//WebTarget webTargetInesPeopleObserving = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/peopleObserving");
 		Person[] peopleObserving;		
-		response = webTargetInesPeopleObserving.request().accept(APPLICATION_JSON).get();		
+		response = webTarget.path("people/2/peopleObserving").request().accept(APPLICATION_JSON).get();		
 		peopleObserving = response.readEntity(Person[].class);
 		
 		assertEquals(6, peopleObserving.length);
@@ -238,9 +214,8 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test peopleObserved
 		 */
-		WebTarget webTargetInesPeopleObserved = newWebTarget("ines", "ines").path("people/2/peopleObserved");
 		List<Person>peopleObserved;		
-		response = webTargetInesPeopleObserved.request().accept(APPLICATION_JSON).get();		
+		response = webTarget.path("people/2/peopleObserved").request().accept(APPLICATION_JSON).get();		
 		peopleObserved = response.readEntity(new GenericType<List<Person>>() {});
 		
 		assertEquals(6, peopleObserved.size());
@@ -250,9 +225,8 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test put updatePerson peopleObserved
 		 */
-		
-		WebTarget webTargetInesPutPeopleObserved = this.newWebTarget("ines", "ines").path("people/2/peopleObserved");	
-		response = webTargetInesPutPeopleObserved.request().accept(APPLICATION_JSON).put(Entity.json(person));		
+
+		response = webTarget.path("people/2/peopleObserved").request().accept(APPLICATION_JSON).put(Entity.json(person));		
 		peopleObserved = response.readEntity(new GenericType<List<Person>>() {});
 		Person testP = null;
 		for (Person p : peopleObserved) {
@@ -268,8 +242,7 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test getAvatar
 		 */
-		WebTarget webTargetInesgetAvatar = this.newWebTarget("ines", "ines").path("people/2/avatar");	
-		response = webTargetInesgetAvatar.request().get();	
+		response = webTarget.path("people/2/avatar").request().get();	
 		Document docum = response.readEntity(Document.class);
 
 		assertEquals(1, docum.getIdentiy());
