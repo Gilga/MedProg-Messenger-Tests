@@ -11,13 +11,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
@@ -38,21 +43,43 @@ public class PersonServiceTest extends ServiceTest {
 	//WebTarget userTarget;
 	//WebTarget userTargetInvalid;
 	
+	static String getLogin(String username, String password) {
+		String usernameAndPassword = username + ":" + password;
+		return "Basic " + java.util.Base64.getEncoder().encodeToString(usernameAndPassword.getBytes());
+	}
+	
 	@Before
 	public void setupBefore() {
-	
-		String username = "ines.bergmann@web.de";
-		String password = "ines";
-		String usernameAndPassword = username + ":" + password;
 		authorizationHeaderName = "Authorization";
-		authorizationHeaderValue = "Basic"
-				+ java.util.Base64.getEncoder().encodeToString(usernameAndPassword.getBytes());
-		authorizationHeaderInvalidValue = "Basic"
-				+ java.util.Base64.getEncoder().encodeToString("ines.bergmann@web.de:bla".getBytes());
+		authorizationHeaderValue = getLogin("ines.bergmann@web.de", "ines");
+		authorizationHeaderInvalidValue = "Basic " + java.util.Base64.getEncoder().encodeToString("ines.bergmann@web.de:bla".getBytes());
 	}
+	
+	@Test
+	public void testDBConnection() throws SQLException {
+		java.sql.Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/messenger?user=root&password=root");
+		assertTrue(connect.isClosed() == false);
+		connect.close();
+		assertTrue(connect.isClosed() == true);
+	}
+	
+	@Test
+	public void testPerson() throws SQLException, InterruptedException, ExecutionException {
+		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
+		Response response = userTarget.path("people/2").request(APPLICATION_JSON).get();
+		assertTrue(response.getStatus() == 200);
+	}
+	
+	@Test
+	public void testLogin() throws SQLException, InterruptedException, ExecutionException {
+		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
+		Response response = userTarget.path("people/requester").request(APPLICATION_JSON).header(authorizationHeaderName, authorizationHeaderValue).get();
+		assertTrue(response.getStatus() == 200);
+	}
+
 	@Test
 	public void testCriteriaQueries() {
-		
+		System.out.println("testCriteriaQueries");
 		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
 		/*
 		 * Test GET queryParam
@@ -60,10 +87,16 @@ public class PersonServiceTest extends ServiceTest {
 		Person[] people;
 
 		final int offset = 10, limit = 200;
-		Response response = userTarget.path("people/2").queryParam("offset", offset).queryParam("limit", limit).request()
-				.accept(APPLICATION_JSON).get();
+		Response response = userTarget.path("people").
+				queryParam("offset", offset).
+				queryParam("limit", limit).
+				request(APPLICATION_JSON).get();
 
+		assertTrue(response.getStatus() == 200);
+		
 		people = response.readEntity(Person[].class);
+		
+		assertTrue(people != null);
 
 		for (Person p : people) {
 			assertTrue(offset <= p.getVersion());
@@ -76,8 +109,8 @@ public class PersonServiceTest extends ServiceTest {
 		 * Test timeStamp
 		 */
 		final long lowerCreationTimestamp = 0, upperCreationTimestamp = 50;
-		response = userTarget.path("people/2").queryParam("lowerCreationTimestamp", lowerCreationTimestamp)
-				.queryParam("upperCreationTimestamp", upperCreationTimestamp).request().accept(APPLICATION_JSON).get();
+		response = userTarget.path("people").queryParam("lowerCreationTimestamp", lowerCreationTimestamp)
+				.queryParam("upperCreationTimestamp", upperCreationTimestamp).request(APPLICATION_JSON).get();
 
 		people = response.readEntity(Person[].class);
 
@@ -89,8 +122,7 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test givenName param
 		 */
-		response = userTarget.path("people/2").queryParam("givenName", "Ines").request().accept(APPLICATION_JSON)
-				.get();
+		response = userTarget.path("people").queryParam("givenName", "Ines").request(APPLICATION_JSON).get();
 
 		people = response.readEntity(Person[].class);
 
@@ -168,7 +200,7 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * test PUT update person/create person
 		 */
-		Response response = webTarget.path("people/2").request().accept(APPLICATION_JSON).header("Set-password", "password")
+		Response response = webTarget.path("people/2").request(APPLICATION_JSON).header("Set-password", "password")
 				.put(Entity.json(person));
 		//id how to get ??????????
 		String idPerson = response.readEntity(String.class);
@@ -180,7 +212,7 @@ public class PersonServiceTest extends ServiceTest {
 		/*
 		 * Test getPerson
 		 */
-		response = webTarget.path("people/2").request().accept(APPLICATION_JSON).get();
+		response = webTarget.path("people/2").request(APPLICATION_JSON).get();
 		Person returnedPerson = response.readEntity(Person.class);
 		assertTrue(response.getStatus() == 200);
 		assertEquals(2L, returnedPerson.getIdentiy());
@@ -191,17 +223,18 @@ public class PersonServiceTest extends ServiceTest {
 		
 		List<Message> msgs;		
 		//WebTarget webTargetInesMsgs = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/messagesAuthored");
-		response =webTarget.path("people/2/messagesAuthored").request().accept(APPLICATION_JSON).get();		
+		response =webTarget.path("people/2/messagesAuthored").request(APPLICATION_JSON).get();		
+		assertTrue(response.getStatus() == 200);
+		
 		msgs = response.readEntity(new GenericType<List<Message>>() {});	
 		assertNotEquals(0, msgs.size());
-		assertTrue(response.getStatus() == 200);
-	
+
 		/*
 		 * Test peopleObserving
 		 */
 		//WebTarget webTargetInesPeopleObserving = newWebTarget("ines.bergmann@web.de", "ines").path("people/2/peopleObserving");
 		Person[] peopleObserving;		
-		response = webTarget.path("people/2/peopleObserving").request().accept(APPLICATION_JSON).get();		
+		response = webTarget.path("people/2/peopleObserving").request(APPLICATION_JSON).get();		
 		peopleObserving = response.readEntity(Person[].class);
 		
 		assertEquals(6, peopleObserving.length);
@@ -215,7 +248,7 @@ public class PersonServiceTest extends ServiceTest {
 		 * Test peopleObserved
 		 */
 		List<Person>peopleObserved;		
-		response = webTarget.path("people/2/peopleObserved").request().accept(APPLICATION_JSON).get();		
+		response = webTarget.path("people/2/peopleObserved").request(APPLICATION_JSON).get();		
 		peopleObserved = response.readEntity(new GenericType<List<Person>>() {});
 		
 		assertEquals(6, peopleObserved.size());
@@ -226,7 +259,7 @@ public class PersonServiceTest extends ServiceTest {
 		 * Test put updatePerson peopleObserved
 		 */
 
-		response = webTarget.path("people/2/peopleObserved").request().accept(APPLICATION_JSON).put(Entity.json(person));		
+		response = webTarget.path("people/2/peopleObserved").request(APPLICATION_JSON).put(Entity.json(person));		
 		peopleObserved = response.readEntity(new GenericType<List<Person>>() {});
 		Person testP = null;
 		for (Person p : peopleObserved) {
