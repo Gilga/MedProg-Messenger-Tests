@@ -107,7 +107,6 @@ public class ServiceTest {
 	static public void startEmbeddedHttpContainer () {
 		final ResourceConfig configuration = new ResourceConfig()
 			.packages(ServiceTest.class.getPackage().toString())
-			.packages(RestJpaLifecycleProvider.class.getPackage().toString())
 			.register(provider)
 			.register(MoxyJsonFeature.class)	// edit "network.http.accept.default" in Firefox's "about:config"//jaxon marschaling statt moxy
 			.register(MoxyXmlFeature.class)		// to make "application/json" preferable to "application/xml"
