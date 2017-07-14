@@ -58,7 +58,7 @@ public class MessageServiceTest extends ServiceTest {
 		//idMsg = response.readEntity(Long.class);
 		//idMsg = Long.parseLong(response.readEntity(String.class));
 		//response what type of a response has to be here
-		assertEquals(201,response.getStatus());
+		assertEquals(200,response.getStatus());
 		//System.out.println(response.getStatus());
 		//assertNotEquals(0, idMsg);
 		
