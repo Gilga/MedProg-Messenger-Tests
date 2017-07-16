@@ -27,84 +27,60 @@ import de.sb.messenger.persistence.Person.Group;
 
 public class MessageServiceTest extends ServiceTest {
 
-	Client client;
-	// static private final URI SERVICE_URI =
-	// URI.create("http://localhost:8001/e");
-	// String usernameAndPassword;
-	// String authorizationHeaderName;
-	// String authorizationHeaderValue;
-	WebTarget webTarget;
-	Person returnedPerson;
-	Message message;
-	long idMsg ;
-
-	@Before
-	public void setupBefore() {
-
-		webTarget = newWebTarget("ines.bergmann@web.de", "ines");
-	}
-
 	@Test
 	public void testCriteriaQueries() {
-
-		Response res = webTarget.path("people/2").request().accept(APPLICATION_JSON).get();
-		returnedPerson = res.readEntity(Person.class);
-
-		BaseEntity baseEntity = new BaseEntity();
-		message = new Message(returnedPerson, baseEntity, "Hi there!");
-
-		Response response = webTarget.request().accept(TEXT_PLAIN).header("Authorization", "authorization")
-				.put(Entity.json(message));
-		//idMsg = response.readEntity(Long.class);
-		//idMsg = Long.parseLong(response.readEntity(String.class));
-		//response what type of a response has to be here
-		assertEquals(200,response.getStatus());
-		//System.out.println(response.getStatus());
-		//assertNotEquals(0, idMsg);
+		WebTarget webTarget = newWebTarget("ines.bergmann@web.de", "ines");
 		
+		Response res = webTarget.path("people/2").request().accept(APPLICATION_JSON).get();
+		Person returnedPerson = res.readEntity(Person.class);
+		BaseEntity baseEntity = new BaseEntity();
+		Message message = new Message(returnedPerson, baseEntity, "Hi there!");
+
+		Response response = webTarget.path("messages").queryParam("subjectReference", 2L).request()
+				.put(Entity.text(message.getBody()));
+		long idMsg = response.readEntity(Long.class);
+		
+		assertEquals(200, response.getStatus());
+		assertNotEquals(0L, idMsg);
+		
+		//getWasteBasket().add(idMsg);
 	}
 
 	@Test
 	public void testIdentityQueries() {
+		
 		/*
 		 * Test getMessage
 		 */
+		WebTarget webTarget = newWebTarget("ines.bergmann@web.de", "ines");
+		// cannot find the msg just put, so created a msg with id 11
 		Response response = webTarget.path("messages/11").request().accept(APPLICATION_JSON).get();
 		Message returnedMsg = response.readEntity(Message.class);
-		// TODO how to get the msg ID
 
+		assertEquals(200, response.getStatus());
 		assertNotNull(returnedMsg);
-		assertTrue(response.getStatus() == 200);
 		assertEquals(APPLICATION_JSON_TYPE, response.getMediaType());
 
 		/*
 		 * Test getAuthor
 		 */
+		response = webTarget.path("messages/11/author").request().accept(APPLICATION_JSON).get();
+		Person author = response.readEntity(Person.class);
 
-		response = webTarget.path("messages/idMsg/author").request().accept(APPLICATION_JSON).get();
-		returnedMsg = response.readEntity(Message.class);
-
-		assertNotNull(returnedMsg);
-		assertEquals("Ines", returnedMsg.getAuthor().getName().getGiven());
 		assertTrue(response.getStatus() == 200);
+		assertNotNull(author);
+		assertEquals("Zeta", author.getName().getGiven());
 		assertEquals(APPLICATION_JSON_TYPE, response.getMediaType());
 
 		/*
 		 * Test getSubject
 		 */
-		response = webTarget.path("messages/idMsg/subject").request().accept(APPLICATION_JSON).get();
-		returnedMsg = response.readEntity(Message.class);
+		response = webTarget.path("messages/11/subject").request().accept(APPLICATION_JSON).get();
+		BaseEntity subject = response.readEntity(BaseEntity.class);
 
-		assertNotNull(returnedMsg);
-		assertEquals(message.getSubject(), returnedMsg.getSubject());
 		assertTrue(response.getStatus() == 200);
+		assertNotNull(subject);
 		assertEquals(APPLICATION_JSON_TYPE, response.getMediaType());
-		this.getWasteBasket().add(message.getIdentiy());
 
 	}
-
-	// links
-	// https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/en/part1/chapter8/client_and_web_target.html
-	// authorization -
-	// http://www.developerscrappad.com/2364/java/java-ee/rest-jax-rs/how-to-perform-http-basic-access-authentication-with-jax-rs-rest-client/
 }
