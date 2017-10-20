@@ -67,10 +67,10 @@ public class DocumentEntityTest extends EntityTest {
 		entityManager.persist(doc);
 		transaction.commit();
 		
-		this.getWasteBasket().add(doc.getIdentiy());
+		this.getWasteBasket().add(doc.getIdentity());
 		
 		transaction.begin();
-		doc = entityManager.find(Document.class, doc.getIdentiy());
+		doc = entityManager.find(Document.class, doc.getIdentity());
 		assertEquals("image/jpeg", doc.getContentType());
 		String cont = new String(doc.getContent());
 		assertEquals(cont, "some content");
@@ -80,7 +80,7 @@ public class DocumentEntityTest extends EntityTest {
 		entityManager.getTransaction().commit();
 		
 		// check if document is deleted , find for getter , Reference for setter
-		assertNull(entityManager.find(Document.class, doc.getIdentiy()));
+		assertNull(entityManager.find(Document.class, doc.getIdentity()));
 
 	}
 

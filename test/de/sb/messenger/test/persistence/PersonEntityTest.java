@@ -105,12 +105,12 @@ public class PersonEntityTest extends EntityTest {
 		transaction.begin();
 		entityManager.persist(person);
 		transaction.commit();
-		this.getWasteBasket().add(doc.getIdentiy());
-		this.getWasteBasket().add(person.getIdentiy());
+		this.getWasteBasket().add(doc.getIdentity());
+		this.getWasteBasket().add(person.getIdentity());
 		
 		
 		 transaction.begin();
-		 person = entityManager.find(Person.class, person.getIdentiy());
+		 person = entityManager.find(Person.class, person.getIdentity());
 		 assertEquals(person.getName().getGiven(), "John");
 		 assertEquals(person.getName().getFamily(), "Smith");
 		 assertEquals(person.getAddress().getCity(), "Berlin");
@@ -123,8 +123,8 @@ public class PersonEntityTest extends EntityTest {
 		 transaction.commit();
 		 
 		 // check if person is deleted , find for getter , Reference for setter
-		 assertNull(entityManager.find(Document.class, doc.getIdentiy()));
-		 assertNull(entityManager.find(Person.class, person.getIdentiy()));
+		 assertNull(entityManager.find(Document.class, doc.getIdentity()));
+		 assertNull(entityManager.find(Person.class, person.getIdentity()));
 
 	}
 

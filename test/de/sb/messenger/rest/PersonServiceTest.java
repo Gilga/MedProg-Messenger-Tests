@@ -221,7 +221,7 @@ public class PersonServiceTest extends ServiceTest {
 		response = webTarget.path("people/2").request(APPLICATION_JSON).get();
 		Person returnedPerson = response.readEntity(Person.class);
 		assertTrue(response.getStatus() == 200);
-		assertEquals(2L, returnedPerson.getIdentiy());
+		assertEquals(2L, returnedPerson.getIdentity());
 
 		/*
 		 * Test getMessagesAuthored
@@ -246,12 +246,12 @@ public class PersonServiceTest extends ServiceTest {
 		
 		assertEquals(6, peopleObserving.length);
 		assertTrue(response.getStatus() == 200);
-		assertEquals(3L, peopleObserving[0].getIdentiy());
-		assertEquals(4L, peopleObserving[1].getIdentiy());
-		assertEquals(5L, peopleObserving[2].getIdentiy());
-		assertEquals(6L, peopleObserving[3].getIdentiy());
-		assertEquals(7L, peopleObserving[4].getIdentiy());
-		assertEquals(8L, peopleObserving[5].getIdentiy());
+		assertEquals(3L, peopleObserving[0].getIdentity());
+		assertEquals(4L, peopleObserving[1].getIdentity());
+		assertEquals(5L, peopleObserving[2].getIdentity());
+		assertEquals(6L, peopleObserving[3].getIdentity());
+		assertEquals(7L, peopleObserving[4].getIdentity());
+		assertEquals(8L, peopleObserving[5].getIdentity());
 		
 		
 		
@@ -265,7 +265,7 @@ public class PersonServiceTest extends ServiceTest {
 
 		assertEquals(6, peopleObserved.size());
 		assertTrue(response.getStatus() == 200);
-		assertEquals(3L, peopleObserved.get(0).getIdentiy());
+		assertEquals(3L, peopleObserved.get(0).getIdentity());
 
 		/*
 		 * Test put updatePerson peopleObserved
@@ -290,7 +290,7 @@ public class PersonServiceTest extends ServiceTest {
 		response = webTarget.path("people/2/avatar").request().get();
 		Document docum = response.readEntity(Document.class);
 
-		assertEquals(1, docum.getIdentiy());
+		assertEquals(1, docum.getIdentity());
 		assertEquals("image/jpeg", docum.getContentType());
 		assertEquals(MEDIA_TYPE_WILDCARD, response.getMediaType());
 		assertTrue(response.getStatus() == 200);

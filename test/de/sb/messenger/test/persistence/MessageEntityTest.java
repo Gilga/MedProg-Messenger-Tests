@@ -80,10 +80,10 @@ public class MessageEntityTest extends EntityTest {
 		entityManager.persist(message);
 		entityManager.getTransaction().commit();
 
-		this.getWasteBasket().add(message.getIdentiy());
+		this.getWasteBasket().add(message.getIdentity());
 		
 		transaction.begin();
-		message = entityManager.find(Message.class, message.getIdentiy());
+		message = entityManager.find(Message.class, message.getIdentity());
 		assertEquals(message.getAuthor(), person);
 		assertEquals(message.getBody(), "Hi there!");
 		
@@ -92,7 +92,7 @@ public class MessageEntityTest extends EntityTest {
 		transaction.commit();
 		
 		// check if it's deleted , find for getter , Reference for setter	
-		assertNull(entityManager.find(Message.class, message.getIdentiy()));
+		assertNull(entityManager.find(Message.class, message.getIdentity()));
 		
 	}
 
