@@ -2,28 +2,21 @@ package de.sb.messenger.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URI;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.sb.messenger.persistence.BaseEntity;
-import de.sb.messenger.persistence.Document;
 import de.sb.messenger.persistence.Message;
 import de.sb.messenger.persistence.Person;
-import de.sb.messenger.persistence.Person.Group;
 
 public class MessageServiceTest extends ServiceTest {
 

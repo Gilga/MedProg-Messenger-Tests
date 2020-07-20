@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!--The identifier of the parent POM -->
+    <!--
+    <parent>
+        <groupId>de.sb.messenger</groupId>
+        <artifactId>MedProgMessenger</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../MedProg-Messenger/pom.xml</relativePath>
+    </parent>
+    -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.sb.messenger</groupId>
+    <artifactId>MedProgMessengerTests</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>MedProg-Messenger-Tests</name>
+    <url>https://github.com/Gilga/MedProg-Messenger-Tests</url>
+    <description>
+		<![CDATA[M1 Messenger Project.]]>
+	</description>
+    <properties>
+        <!-- <importjarfile><![CDATA[<jar-file>MedProgMessenger-0.0.1-SNAPSHOT.jar</jar-file>]]></importjarfile> -->
+        <local.repository.folder>${project.basedir}/libs</local.repository.folder>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java-version>1.8</java-version>
+        <!-- <maven.test.failure.ignore>true</maven.test.failure.ignore> -->
+        <spring.framework.version>5.2.6.RELEASE</spring.framework.version>
+        <javax-version>8.0.1</javax-version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
+        <junit.platform.version>1.6.0</junit.platform.version>
+        <org-glassfish-version>2.31</org-glassfish-version>
+        <hibernate-version>5.4.18.Final</hibernate-version>
+        <hibernate-validator-version>6.1.5.Final</hibernate-validator-version>
+    </properties>
+    <repositories>
+        <!-- // external repo <repository> <id>custom-maven-repo</id> <url>file:///custom-maven-repo</url> 
+            </repository> -->
+        <repository>
+            <id>local-maven-project-repo</id>
+            <url>file://${local.repository.folder}</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <dependencies>
+    
+        <!-- Project Dependencies -->
+		<dependency>
+			<groupId>de.sb.messenger</groupId>
+			<artifactId>MedProgMessenger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.sb.messenger</groupId>
+			<artifactId>MedProgMessengerWeb</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+    
+        <!-- Spring Framework -->
+        <!--
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.framework.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>2.3.0.RELEASE</version>
+        </dependency>
+
+        
+        <!-- Logger -->
+
+<!--         <dependency> -->
+<!--             <groupId>org.slf4j</groupId> -->
+<!--             <artifactId>slf4j-api</artifactId> -->
+<!--             <version>1.7.30</version> -->
+<!--         </dependency> -->
+
+        <!-- log4j2 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+
+        <!-- log4j2 core -->
+<!--         <dependency> -->
+<!--             <groupId>org.apache.logging.log4j</groupId> -->
+<!--             <artifactId>log4j-core</artifactId> -->
+<!--             <version>2.13.3</version> -->
+<!--         </dependency> -->
+
+        <!-- SLF4J Bridge -->
+        <dependency>
+        	<groupId>org.apache.logging.log4j</groupId>
+        	<artifactId>log4j-slf4j-impl</artifactId>
+        	<version>2.13.3</version>
+        </dependency>
+
+        <!-- Java EE Platform -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${javax-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- DB ORM -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.hibernate</groupId>
+           <artifactId>hibernate-entitymanager</artifactId>
+           <version>${hibernate-version}</version>
+           <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator-version}</version>
+        </dependency>
+        
+        <!-- DB Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.20</version>
+        </dependency>
+        
+        <!-- Datasource -->
+        <!--
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        
+        <!-- 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+        </dependency>
+        -->
+        
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- glassfish server -->
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>  
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>  
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-jdk-http</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-entity-filtering</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${org-glassfish-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- Jarkata EE / Java EE -->
+        <!--
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.0.0-RC2</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.0-M1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0-M1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>2.0.0-RC1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.0.0-M1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        -->
+   
+        <!-- Local Repository -->
+        <dependency>
+            <groupId>de.sb</groupId>
+            <artifactId>sb-toolbox</artifactId>
+            <version>1.1.7</version>
+            <scope>system</scope>
+            <systemPath>${local.repository.folder}/de/sb/sb-toolbox/1.1.7/sb-toolbox-1.1.7.jar</systemPath>
+        </dependency>
+        <!--  
+        <dependency>
+            <groupId>de.sb</groupId>
+            <artifactId>sb-toolbox</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        -->
+
+    </dependencies>
+
+    <build>
+        <directory>target</directory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>META-INF/persistence.xml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <!--  
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/spring4</path>
+                </configuration>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                </configuration>
+                <!--
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                -->
+            </plugin>
+        </plugins>
+    </build>
+</project>

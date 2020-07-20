@@ -10,27 +10,26 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import com.sun.net.httpserver.HttpServer;
 
-import de.sb.messenger.rest.EntityService;
 import de.sb.toolbox.Copyright;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
 import de.sb.toolbox.net.RestResponseCodeProvider;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 /**
  * JUnit base class for messenger service tests. It realizes once-per-all-tests embedded HTTP container
@@ -38,12 +37,12 @@ import de.sb.toolbox.net.RestResponseCodeProvider;
  * once-per-any-test entity cleanup based on {@linkplain EntityService}. Note that the HTTP
  * container can alternatively be started as a separate application.
  */
-@Copyright(year=2013, holders="Sascha Baumeister")
+@Copyright(year=2020, holders={"Sascha Baumeister", "Mario Link"}) //2013
 public class ServiceTest {
 	static private final URI SERVICE_URI = URI.create("http://localhost:8010/services");
 	static private HttpServer HTTP_CONTAINER = null;
 
-	static private final RestJpaLifecycleProvider provider = new RestJpaLifecycleProvider("messenger");
+	static private final RestJpaLifecycleProvider PROVIDER = new RestJpaLifecycleProvider("messenger");
 	
 	private final Set<Long> wasteBasket = new HashSet<>();
 
@@ -92,9 +91,12 @@ public class ServiceTest {
 			.register(MoxyXmlFeature.class)
 			.register(RestResponseCodeProvider.class)
 			.register(EntityFilteringFeature.class)
-			.register(LoggingFilter.class)
-			.register(provider);
+			//.register(LoggingFilter.class) // deprectaed
+            .property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY)
+            .property(LoggingFeature.LOGGING_FEATURE_LOGGER_LEVEL_CLIENT, "WARNING")
+			.register(PROVIDER);
 		
+		// jakarta in org.glassfish 3.0.0-M6
 		return ClientBuilder.newClient(configuration).target(SERVICE_URI);
 	}
 
@@ -107,7 +109,7 @@ public class ServiceTest {
 	static public void startEmbeddedHttpContainer () {
 		final ResourceConfig configuration = new ResourceConfig()
 			.packages(ServiceTest.class.getPackage().toString())
-			.register(provider)
+			.register(PROVIDER)
 			.register(MoxyJsonFeature.class)	// edit "network.http.accept.default" in Firefox's "about:config"//jaxon marschaling statt moxy
 			.register(MoxyXmlFeature.class)		// to make "application/json" preferable to "application/xml"
 			.register(EntityFilteringFeature.class);
@@ -127,8 +129,6 @@ public class ServiceTest {
 		Logger.getGlobal().log(INFO, "Embedded HTTP container stopped.");
 	}
 
-
-	
 
 	/**
 	 * Application entry point.

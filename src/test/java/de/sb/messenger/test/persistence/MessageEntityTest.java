@@ -3,9 +3,6 @@ package de.sb.messenger.test.persistence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 import javax.persistence.EntityManager;

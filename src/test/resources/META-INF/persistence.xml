@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+    xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+	<persistence-unit name="messenger" transaction-type="RESOURCE_LOCAL"><!-- RESOURCE_LOCAL -->
+        <!--  <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+<!--         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
+        
+        <!-- <jta-data-source>myDataSource</jta-data-source> -->
+		<!-- <exclude-unlisted-classes>false</exclude-unlisted-classes> -->
+        <!-- <jta-data-source>java:global/jdbc/default</jta-data-source>-->
+        <!-- <mapping-file>META-INF/mapping.xml</mapping-file>-->
+        <!-- <jar-file>de.sb.messenger.MedProgMessenger.jar</jar-file> -->
+        <!--  <jar-file>lib/MedProgMessenger-0.0.1-SNAPSHOT.jar</jar-file> -->
+        <!--  ${importjarfile} -->
+<!--         <non-jta-data-source>java:/DefaultDS</non-jta-data-source> -->
+        <!-- <jar-file>file:../target/classes</jar-file> -->
+
+        <class>de.sb.messenger.persistence.BaseEntity</class>
+        <class>de.sb.messenger.persistence.Address</class>
+        <class>de.sb.messenger.persistence.Document</class>
+        <class>de.sb.messenger.persistence.Message</class>
+        <class>de.sb.messenger.persistence.Name</class>
+        <class>de.sb.messenger.persistence.Person</class>
+
+		<!-- non-jta-data-source>JNDI-name in Java EE</non-jta-data-source -->
+		<properties>
+            <!-- <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/> is deprecated, use: com.mysql.cj.jdbc.Driver --> 
+            <!-- <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/> -->
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/messenger"/>
+			<property name="javax.persistence.jdbc.user" value="root"/>
+			<property name="javax.persistence.jdbc.password" value="root"/>
+            
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+            <!-- <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/> -->
+            
+            <property name="hibernate.archive.autodetection" value="class, hbm"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.cache.use_second_level_cache" value="false" />
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>
+            <property name="hibernate.jdbc.batch_size" value="0"/>
+             
+		</properties>
+	</persistence-unit>
+</persistence>

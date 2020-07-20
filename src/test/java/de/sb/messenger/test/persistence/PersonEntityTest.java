@@ -2,9 +2,6 @@ package de.sb.messenger.test.persistence;
 
 import static org.junit.Assert.*;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -28,12 +25,12 @@ public class PersonEntityTest extends EntityTest {
 
 	@Before
 	public void setUpBefore() throws Exception {
-
+		LOGGER.debug("#setUpBefore");
 		// entity manager object creates entity transaction instance
 		entityManager = this.getEntityManagerFactory().createEntityManager();
 		validator = this.getEntityValidatorFactory().getValidator();
+		LOGGER.debug("#setUpBefore#");
 	}
-
 
 	@SuppressWarnings("static-access")
 	@Test
@@ -130,8 +127,10 @@ public class PersonEntityTest extends EntityTest {
 
 	@After
 	public void tearDownAfter() throws Exception {
+		LOGGER.debug("#tearDownAfter");
 		entityManager.clear();
 		entityManager.close();
+		LOGGER.debug("#tearDownAfter#");
 	}
 
 }

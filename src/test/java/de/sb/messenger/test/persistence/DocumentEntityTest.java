@@ -3,8 +3,6 @@ package de.sb.messenger.test.persistence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Set;
 
 import javax.persistence.EntityManager;

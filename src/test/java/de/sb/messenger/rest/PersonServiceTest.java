@@ -4,9 +4,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static javax.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,24 +15,23 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import de.sb.messenger.persistence.Document;
 import de.sb.messenger.persistence.Message;
 import de.sb.messenger.persistence.Person;
 import de.sb.messenger.persistence.Person.Group;
 
+@TestMethodOrder(OrderAnnotation.class)
 public class PersonServiceTest extends ServiceTest {
 
 	public String authorizationHeaderName;
@@ -57,6 +55,7 @@ public class PersonServiceTest extends ServiceTest {
 	}
 
 	@Test
+	@Order(1)
 	public void testDBConnection() throws SQLException {
 		java.sql.Connection connect = DriverManager
 				.getConnection("jdbc:mysql://localhost/messenger?user=root&password=root");
@@ -66,6 +65,7 @@ public class PersonServiceTest extends ServiceTest {
 	}
 
 	@Test
+	@Order(4)
 	public void testPerson() throws SQLException, InterruptedException, ExecutionException {
 		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
 		Response response = userTarget.path("people/2").request(APPLICATION_JSON).get();
@@ -73,14 +73,19 @@ public class PersonServiceTest extends ServiceTest {
 	}
 
 	@Test
+	@Order(2)
 	public void testLogin() throws SQLException, InterruptedException, ExecutionException {
 		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
+		System.out.println("Uri: " + userTarget.getUri());
+		
 		Response response = userTarget.path("people/requester").request(APPLICATION_JSON)
 				.header(authorizationHeaderName, authorizationHeaderValue).get();
+		System.out.println("Status: " + response.getStatus());
 		assertTrue(response.getStatus() == 200);
 	}
 
 	@Test
+	@Order(5)
 	public void testCriteriaQueries() {
 		System.out.println("testCriteriaQueries");
 		WebTarget userTarget = newWebTarget("ines.bergmann@web.de", "ines");
@@ -137,6 +142,7 @@ public class PersonServiceTest extends ServiceTest {
 	 * Test authentification and
 	 */
 	@Test
+	@Order(3)
 	public void testIdentityQueries() {
 		WebTarget userTarget1 = newWebTarget("sascha.baumeister@gmail.com", "sascha");
 		System.out.println("BBBBB" + userTarget1.toString());
@@ -186,6 +192,7 @@ public class PersonServiceTest extends ServiceTest {
 	// }
 
 	@Test
+	@Order(6)
 	public void testLifecycle() {
 		String s = "some content";
 		byte[] content = s.getBytes();
@@ -199,7 +206,7 @@ public class PersonServiceTest extends ServiceTest {
 		person.getAddress().setCity("Berlin");
 		person.setGroup(Group.USER);
 		String passwort = "password";
-		byte[] hash = person.passwordHash(passwort);
+		byte[] hash = Person.passwordHash(passwort);
 		person.setPasswordHash(hash);
 
 		WebTarget webTarget = newWebTarget("ines.bergmann@web.de", "ines");
